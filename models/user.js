@@ -11,12 +11,7 @@ const userSchema = new mongoose.Schema(
       default: "patient",
     },
     speciality: { type: String }, // <-- Added field for doctors
-    availability: [
-      {
-        date: { type: Date, required: true },
-        slots: [{ type: String }], // e.g., ["09:00", "10:00", "14:30"]
-      },
-    ],
+    // availability field removed
   },
   { timestamps: true }
 );

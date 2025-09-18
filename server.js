@@ -6,7 +6,8 @@ import authRoutes from "./routes/authRoutes.js";
 import appointmentRoutes from "./routes/appointmentRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import doctorRoutes from "./routes/doctorRoutes.js";
-import nurseRoutes from "./routes/nurseRoute.js";
+import nurseRoutes from "./routes/nurseRoutes.js";
+import patientRecord from "./models/patientRecord.js";
 
 dotenv.config();
 connectDB();
@@ -22,6 +23,7 @@ app.use("/api/appointments", appointmentRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/doctors", doctorRoutes);
 app.use("/api/nurses", nurseRoutes);
+app.use("/api/patient-records", patientRecord);
 
 app.get("/", (req, res) => res.send("API is running..."));
 
