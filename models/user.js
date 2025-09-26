@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema(
       enum: ["patient", "doctor", "nurse", "admin"],
       default: "patient",
     },
-    speciality: { type: String }, // <-- Added field for doctors
+    specialization: { type: String }, // <-- Added field for doctors
     // availability field removed
   },
   { timestamps: true }

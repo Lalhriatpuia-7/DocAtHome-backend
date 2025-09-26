@@ -2,6 +2,9 @@ import crypto from "crypto";
 import Appointment from "../models/appointment.js";
 import DoctorAvailability from "../models/doctorAvailability.js";
 import Razorpay from "razorpay";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 // Helper to generate a random Jitsi meeting link
 function generateJitsiLink() {
