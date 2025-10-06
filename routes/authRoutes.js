@@ -2,6 +2,7 @@ import express from "express";
 import { registerUser, loginUser,forgotPassword } from "../controllers/authController.js";
 import { protect, adminOnly } from "../middleware/authMiddleware.js";
 
+
 const router = express.Router();
 
 router.post("/register", registerUser);

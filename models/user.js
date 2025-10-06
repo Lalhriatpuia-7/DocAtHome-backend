@@ -12,6 +12,10 @@ const userSchema = new mongoose.Schema(
     },
     specialization: { type: String }, // <-- Added field for doctors
     // availability field removed
+    lastLogin: { type: Date },
+    failedLoginAttempts: { type: Number, default: 0 },
+    isLocked: { type: Boolean, default: false },
+    lockUntil: { type: Date },
   },
   { timestamps: true }
 );

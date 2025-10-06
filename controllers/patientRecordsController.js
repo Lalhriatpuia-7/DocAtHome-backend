@@ -1,9 +1,9 @@
-import patientRecord from "../models/patientRecord";
+import PatientRecord from "../models/patientRecord.js";
 
-const createPatientRecord = async (req, res) => {
+export const createPatientRecord = async (req, res) => {
   try {
     const { patientId, records } = req.body;        
-    const newRecord = new patientRecord({ patient: patientId, records });
+    const newRecord = new PatientRecord({ patient: patientId, records });
     const savedRecord = await newRecord.save();
     res.status(201).json(savedRecord);
   } catch (err) {
@@ -11,9 +11,9 @@ const createPatientRecord = async (req, res) => {
   } 
 };
 
-const getPatientRecords = async (req, res) => {
+export const getPatientRecords = async (req, res) => {
     try {   
-        const records = await patient
+        const records = await PatientRecord
         .find({ patient: req.params.patientId })
         .populate("patient", "name email")
         .exec();    
@@ -25,10 +25,10 @@ const getPatientRecords = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 }   
-const editPatientRecord = async (req, res) => {
+export const editPatientRecord = async (req, res) => {
     try {
         const { records } = req.body;   
-        const updatedRecord = await patientRecord
+        const updatedRecord = await PatientRecord
         .findByIdAndUpdate(
             req.params.recordId,
             { records },
@@ -45,9 +45,9 @@ const editPatientRecord = async (req, res) => {
     }       
 };
 
-const deletePatientRecord = async (req, res) => {
+export const deletePatientRecord = async (req, res) => {
     try {
-        const deletedRecord = await patientRecord.findByIdAndDelete(req.params.recordId);   
+        const deletedRecord = await PatientRecord.findByIdAndDelete(req.params.recordId);   
         if (!deletedRecord) {
             return res.status(404).json({ message: "Record not found." });
         }   
@@ -56,6 +56,5 @@ const deletePatientRecord = async (req, res) => {
     } catch (err) {
         res.status(500).json({ message: err.message });
     }       
-};  
+}; 
 
-export { createPatientRecord, getPatientRecords, editPatientRecord, deletePatientRecord };
