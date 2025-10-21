@@ -1,0 +1,14 @@
+2025-10-14 12:13:04 [[32minfo[39m]: Generating token for user ID: 68e38b3d150e79aff594b848 with role: doctor
+2025-10-14 12:13:04 [[32minfo[39m]: User logged in: Doctor1@gmail.com
+2025-10-14 12:15:05 [[32minfo[39m]: Logout request received
+2025-10-14 12:15:05 [[32minfo[39m]: User logged out and token blacklisted
+2025-10-14 12:15:07 [[32minfo[39m]: Generating token for user ID: 68e38b3d150e79aff594b848 with role: doctor
+2025-10-14 12:15:07 [[32minfo[39m]: User logged in: Doctor1@gmail.com
+2025-10-14 12:49:43 [[32minfo[39m]: Generating token for user ID: 68e38b3d150e79aff594b848 with role: doctor
+2025-10-14 12:49:43 [[32minfo[39m]: User logged in: Doctor1@gmail.com
+2025-10-14 12:50:54 [[32minfo[39m]: Logout request received
+2025-10-14 12:50:54 [[32minfo[39m]: User logged out and token blacklisted
+2025-10-14 12:50:55 [[32minfo[39m]: Generating token for user ID: 68e38b3d150e79aff594b848 with role: doctor
+2025-10-14 12:50:55 [[32minfo[39m]: User logged in: Doctor1@gmail.com
+2025-10-14 12:51:27 [[32minfo[39m]: Generating token for user ID: 68e38b3d150e79aff594b848 with role: doctor
+2025-10-14 12:51:27 [[32minfo[39m]: User logged in: Doctor1@gmail.com
