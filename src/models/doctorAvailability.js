@@ -9,11 +9,16 @@ const doctorAvailabilitySchema = new mongoose.Schema({
   },
   slots: [
     {
-      date: { type: Date, required: true },
-      timeSlot: { type: String, required: true }, // e.g., "10:00-10:30"
+      day: { type: Date }, // Legacy field for backward compatibility
+      dayOfWeek: { type: Number }, // 0-6 (Sunday-Saturday)
+      startTime: { type: String, required: true }, 
+      endTime: { type: String, required: true },
+      recurring: { type: Boolean, default: true },
+      createdAt: { type: Date, default: Date.now }
     }
   ],
   region: { type: String }, // e.g., "New York", "California"
+  timeStamp: { type: Date, default: Date.now },
 });
 
 export default mongoose.model("DoctorAvailability", doctorAvailabilitySchema);

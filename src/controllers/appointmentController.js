@@ -86,29 +86,6 @@ export const createAppointment = async (req, res) => {
   }
 };
 
-// export const verifyPayment = async (req, res) => {
-//   try {
-//     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;    
-//     const appointment = await Appointment.findOne({ orderId: razorpay_order_id });
-//     if (!appointment) {
-//       return res.status(404).json({ message: "Appointment not found" });
-//     }
-//     const generated_signature = crypto
-//       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-//       .update(razorpay_order_id + "|" + razorpay_payment_id)
-//       .digest("hex");
-//     if (generated_signature !== razorpay_signature) {
-//       return res.status(400).json({ message: "Invalid payment signature" });
-//     } 
-//     appointment.paymentId = razorpay_payment_id;
-//     appointment.status = "confirmed";
-//     await appointment.save();
-//     res.json({ message: "Payment verified and appointment confirmed", appointment });
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   } 
-// };
-
 export const webHookPayment = async (req, res) => {
   try {
     const secret = process.env.RAZORPAY_WEBHOOK_SECRET;

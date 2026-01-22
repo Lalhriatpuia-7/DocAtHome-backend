@@ -1,0 +1,19 @@
+2026-01-22 11:36:43 [[32minfo[39m]: Adding recurring availability. Full body: {"day":"Monday","startTime":"11:36","endTime":"13:36"}
+2026-01-22 11:36:43 [[32minfo[39m]: Doctor ID: 68e38b3d150e79aff594b848
+2026-01-22 11:36:43 [[32minfo[39m]: Processed slots: [{"day":"Monday","startTime":"11:36","endTime":"13:36"}]
+2026-01-22 11:36:43 [[32minfo[39m]: Current slots count before adding: 8
+2026-01-22 11:36:43 [[32minfo[39m]: Processing slot for Monday (day 1), time: 11:36-13:36
+2026-01-22 11:36:43 [[32minfo[39m]: Total slots added: 4, Total slots now: 12
+2026-01-22 11:36:43 [[32minfo[39m]: Availability saved successfully for doctor: 68e38b3d150e79aff594b848
+2026-01-22 11:40:38 [[32minfo[39m]: Adding recurring availability. Full body: {"day":"Monday","startTime":"11:40","endTime":"13:40"}
+2026-01-22 11:40:38 [[32minfo[39m]: Doctor ID: 68e38b3d150e79aff594b848
+2026-01-22 11:40:38 [[32minfo[39m]: Processed slots: [{"day":"Monday","startTime":"11:40","endTime":"13:40"}]
+2026-01-22 11:40:38 [[32minfo[39m]: Processing recurring slot for day 1 (Monday), time: 11:40-13:40
+2026-01-22 11:40:38 [[32minfo[39m]: Added recurring pattern for day 1
+2026-01-22 11:40:38 [[32minfo[39m]: Total patterns added: 1, Total patterns now: 13
+2026-01-22 11:40:38 [[31merror[39m]: ValidationError: DoctorAvailability validation failed: slots.0.dayOfWeek: Path `dayOfWeek` is required., slots.1.dayOfWeek: Path `dayOfWeek` is required., slots.2.dayOfWeek: Path `dayOfWeek` is required., slots.3.dayOfWeek: Path `dayOfWeek` is required., slots.4.dayOfWeek: Path `dayOfWeek` is required., slots.5.dayOfWeek: Path `dayOfWeek` is required., slots.6.dayOfWeek: Path `dayOfWeek` is required., slots.7.dayOfWeek: Path `dayOfWeek` is required., slots.8.dayOfWeek: Path `dayOfWeek` is required., slots.9.dayOfWeek: Path `dayOfWeek` is required., slots.10.dayOfWeek: Path `dayOfWeek` is required., slots.11.dayOfWeek: Path `dayOfWeek` is required.
+    at Document.invalidate (C:\Personal Projects\DocAtHome\backend\node_modules\mongoose\lib\document.js:3358:32)
+    at Subdocument.invalidate (C:\Personal Projects\DocAtHome\backend\node_modules\mongoose\lib\types\subdocument.js:229:12)
+    at C:\Personal Projects\DocAtHome\backend\node_modules\mongoose\lib\document.js:3119:17
+    at C:\Personal Projects\DocAtHome\backend\node_modules\mongoose\lib\schemaType.js:1416:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:85:11)

@@ -1,0 +1,9 @@
+2026-01-21 12:39:15 [[32minfo[39m]: Generating token for user ID: 68e38b3d150e79aff594b848 with role: doctor
+2026-01-21 12:39:15 [[32minfo[39m]: User logged in: Doctor1@gmail.com
+2026-01-21 22:29:33 [[32minfo[39m]: Adding recurring availability. Full body: {"day":"Tuesday","startTime":"22:29","endTime":"00:29"}
+2026-01-21 22:29:33 [[32minfo[39m]: Doctor ID: 68e38b3d150e79aff594b848
+2026-01-21 22:29:33 [[32minfo[39m]: Processed slots: [{"day":"Tuesday","startTime":"22:29","endTime":"00:29"}]
+2026-01-21 22:29:33 [[32minfo[39m]: Current slots count before adding: 4
+2026-01-21 22:29:33 [[32minfo[39m]: Processing slot for Tuesday (day 2), time: 22:29-00:29
+2026-01-21 22:29:33 [[32minfo[39m]: Total slots added: 4, Total slots now: 8
+2026-01-21 22:29:33 [[32minfo[39m]: Availability saved successfully for doctor: 68e38b3d150e79aff594b848
