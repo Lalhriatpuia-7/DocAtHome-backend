@@ -1,6 +1,11 @@
 import User from "../models/user.js";
 import DoctorAvailability from "../models/doctorAvailability.js";
 import logger from "../utils/logger.js";
+import { 
+  getCurrentMonthAvailability, 
+  getUpcomingAvailability, 
+  migrateSlots 
+} from "../utils/availabilityUtils.js";
 
 export const getDoctors = async (req, res) => {
   try {
@@ -26,13 +31,14 @@ export const getDoctorAvailability = async (req, res) => {
         .json({ message: "Availability not found for this doctor. Please Add Availability." });
     }
     
-    // Convert old format (day field) to new format (dayOfWeek) if needed
+    // Migrate old format to new format if needed
     let needsSave = false;
-    availability.slots.forEach((slot, index) => {
+    availability.slots = availability.slots.map(slot => {
       if (slot.day && !slot.dayOfWeek) {
         slot.dayOfWeek = new Date(slot.day).getDay();
         needsSave = true;
       }
+      return slot;
     });
     
     if (needsSave) {
@@ -40,36 +46,16 @@ export const getDoctorAvailability = async (req, res) => {
       console.log("Migrated old slot format to new format");
     }
     
-    // Calculate actual dates for the next 90 days from recurring patterns
-    const calculatedSlots = [];
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    for (let dayOffset = 0; dayOffset < 90; dayOffset++) {
-      const currentDate = new Date(today);
-      currentDate.setDate(currentDate.getDate() + dayOffset);
-      const dayOfWeek = currentDate.getDay();
-      
-      // Find all slots that match this day of week
-      availability.slots.forEach(slot => {
-        const slotDayOfWeek = slot.dayOfWeek || (slot.day ? new Date(slot.day).getDay() : null);
-        if (slotDayOfWeek === dayOfWeek && slot.recurring) {
-          calculatedSlots.push({
-            day: currentDate,
-            dayOfWeek: slotDayOfWeek,
-            startTime: slot.startTime,
-            endTime: slot.endTime,
-            recurring: slot.recurring
-          });
-        }
-      });
-    }
+    // Calculate availability for next 90 days
+    const calculatedSlots = getUpcomingAvailability(availability.slots, 90);
     
     res.json({ 
       doctor: availability.doctor,
       slots: calculatedSlots,
       pattern: availability.slots 
     });
+    
+    logger.info(`Doctor ${doctorId} availability fetched successfully.`);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

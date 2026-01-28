@@ -1,0 +1,12 @@
+2026-01-25 11:02:19 [[32minfo[39m]: Doctor 68e38b3d150e79aff594b848 availability fetched successfully.
+2026-01-25 11:02:19 [[32minfo[39m]: Doctor 68e38b3d150e79aff594b848 availability fetched successfully.
+2026-01-25 11:02:30 [[32minfo[39m]: Doctor 68e38b3d150e79aff594b848 availability fetched successfully.
+2026-01-25 11:02:45 [[32minfo[39m]: Adding recurring availability. Full body: {"day":"Thursday","startTime":"11:02","endTime":"14:02"}
+2026-01-25 11:02:45 [[32minfo[39m]: Doctor ID: 68e38b3d150e79aff594b848
+2026-01-25 11:02:45 [[32minfo[39m]: Processed slots: [{"day":"Thursday","startTime":"11:02","endTime":"14:02"}]
+2026-01-25 11:02:45 [[32minfo[39m]: Processing recurring slot for day 4 (Thursday), time: 11:02-14:02
+2026-01-25 11:02:45 [[32minfo[39m]: Added recurring pattern for day 4
+2026-01-25 11:02:45 [[32minfo[39m]: Total patterns added: 1, Total patterns now: 4
+2026-01-25 11:02:45 [[32minfo[39m]: Availability saved successfully for doctor: 68e38b3d150e79aff594b848
+2026-01-25 11:02:45 [[32minfo[39m]: Doctor 68e38b3d150e79aff594b848 availability fetched successfully.
+2026-01-25 11:02:52 [[32minfo[39m]: Doctor 68e38b3d150e79aff594b848 availability fetched successfully.
