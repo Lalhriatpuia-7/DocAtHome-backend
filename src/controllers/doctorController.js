@@ -23,8 +23,7 @@ export const getDoctorAvailability = async (req, res) => {
     const doctorId = req.user.id;
     console.log("Fetching availability for doctor ID:", doctorId);  
     let availability = await DoctorAvailability.findOne({ doctor: doctorId });
-    console.log("Retrieved availability:", availability);
-
+    
     if(!availability || availability.slots.length === 0) {
       return res
         .status(404)
@@ -35,8 +34,10 @@ export const getDoctorAvailability = async (req, res) => {
     let needsSave = false;
     availability.slots = availability.slots.map(slot => {
       if (slot.day && !slot.dayOfWeek) {
-        slot.dayOfWeek = new Date(slot.day).getDay();
+        const d = new Date(slot.day);
+        slot.dayOfWeek = d.getUTCDay();
         needsSave = true;
+        console.log('Migrated slot.day to dayOfWeek (UTC):', slot.day, '->', slot.dayOfWeek);
       }
       return slot;
     });
@@ -45,10 +46,15 @@ export const getDoctorAvailability = async (req, res) => {
       await availability.save();
       console.log("Migrated old slot format to new format");
     }
-    
+    // console.log("Availability slots after migration check:", availability.slots);
     // Calculate availability for next 90 days
-    const calculatedSlots = getUpcomingAvailability(availability.slots, 90);
-    
+    // Prepare excluded dates from availability.unavailableDates
+    const excludedDates = (availability.unavailableDates || []).map(u => {
+      return u && u.date ? new Date(u.date) : new Date(u);
+    });
+
+    const calculatedSlots = getUpcomingAvailability(availability.slots, 90, excludedDates);
+    console.log("Calculated Slots:", calculatedSlots);
     res.json({ 
       doctor: availability.doctor,
       slots: calculatedSlots,
@@ -56,6 +62,82 @@ export const getDoctorAvailability = async (req, res) => {
     });
     
     logger.info(`Doctor ${doctorId} availability fetched successfully.`);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const addUnavailableDates = async (req, res) => {
+  try {
+    if (req.user.role !== "doctor") {
+      return res.status(403).json({ message: "Only doctors can set unavailable dates." });
+    }
+
+    const doctorId = req.user._id;
+    const { date, reason } = req.body; // dates: ['2026-02-01', ...]
+
+    if (!date) {
+      return res.status(400).json({ message: "Date is required." });
+    } 
+    let availability = await DoctorAvailability.findOne({ doctor: doctorId });
+    if (!availability) {
+      availability = new DoctorAvailability({ doctor: doctorId, slots: [] });
+    }
+
+    // Normalize date to avoid duplicates
+    const d = new Date(date);
+    d.setHours(0,0,0,0);
+    const key = d.toISOString();
+
+    const existingKeys = new Set((availability.unavailableDates || []).map(u => {
+      const d = u.date instanceof Date ? u.date : new Date(u.date);
+      d.setHours(0,0,0,0);
+      return d.toISOString();
+    }));
+
+    if (!existingKeys.has(key)) {
+      availability.unavailableDates.push({ date: d, reason: reason || undefined });
+    }
+
+    await availability.save();
+    res.json(availability);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const removeUnavailableDates = async (req, res) => {
+  try {
+    if (req.user.role !== "doctor") {
+      return res.status(403).json({ message: "Only doctors can remove unavailable dates." });
+    }
+
+    const doctorId = req.user._id;
+    const { dates } = req.body; // dates: ['2026-02-01', ...]
+
+    if (!Array.isArray(dates) || dates.length === 0) {
+      return res.status(400).json({ message: "Dates array is required." });
+    }
+
+    let availability = await DoctorAvailability.findOne({ doctor: doctorId });
+    if (!availability) {
+      return res.status(404).json({ message: "No availability document found." });
+    }
+
+    const removeKeys = new Set(dates.map(d => {
+      const dt = new Date(d);
+      dt.setHours(0,0,0,0);
+      return dt.toISOString();
+    }));
+
+    availability.unavailableDates = (availability.unavailableDates || []).filter(u => {
+      const d = u.date instanceof Date ? u.date : new Date(u.date);
+      d.setHours(0,0,0,0);
+      return !removeKeys.has(d.toISOString());
+    });
+
+    await availability.save();
+    res.json(availability);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

@@ -7,6 +7,7 @@ import { addAvailability } from "../controllers/doctorController.js";
 import { getDoctorAvailability } from "../controllers/doctorController.js";
 import { protect } from "../middleware/authMiddleware.js";
 import { addRecuringAvailability } from "../controllers/doctorController.js";
+import { addUnavailableDates, removeUnavailableDates } from "../controllers/doctorController.js";
 
 const router = express.Router();
 
@@ -15,6 +16,8 @@ router.get("/availability/",protect, getDoctorAvailability);
 router.put("/availability", protect, updateAvailability);
 router.post("/availability", protect, addAvailability);
 router.post("/recurring-availability", protect, addRecuringAvailability);
+router.post("/availability/unavailable", protect, addUnavailableDates);
+router.delete("/availability/unavailable", protect, removeUnavailableDates);
 
 
 export default router;

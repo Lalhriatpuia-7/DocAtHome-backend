@@ -24,7 +24,7 @@ const getDayOfWeek = (day) => {
     return dayMap[day.toLowerCase()] || 0;
   }
   if (day instanceof Date) {
-    return day.getDay();
+    return day.getUTCDay();
   }
   return 0;
 };
@@ -46,27 +46,51 @@ export const getDayName = (dayOfWeek) => {
  * @param {Date} endDate - End date for calculation (default: end of current month)
  * @returns {Array} - Array of calculated slots with actual dates
  */
-export const calculateRecurringAvailability = (slots, startDate = null, endDate = null) => {
+export const calculateRecurringAvailability = (slots, startDate = null, endDate = null, excludedDates = []) => {
   const calculatedSlots = [];
+    const slotMap = new Map(); // Track unique date+time combinations to avoid duplicates
   
   // Default to current month if dates not provided
   if (!startDate) {
     const now = new Date();
-    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    startDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
   }
   if (!endDate) {
     const now = new Date();
-    endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0); // Last day of month
+    endDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0));
   }
   
-  // Ensure dates are at midnight for consistent comparison
-  startDate.setHours(0, 0, 0, 0);
-  endDate.setHours(23, 59, 59, 999);
+  // Ensure dates are at midnight UTC for consistent comparison
+  startDate.setUTCHours(0, 0, 0, 0);
+  endDate.setUTCHours(23, 59, 59, 999);
   
   // Iterate through each day in the date range
   const currentDate = new Date(startDate);
+  
+  // Normalize excluded dates into a set of keys for fast lookup (YYYY-MM-DD in UTC)
+  const formatDateKey = (d) => {
+    const year = d.getUTCFullYear();
+    const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(d.getUTCDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+  
+  const excludedSet = new Set((excludedDates || []).map(d => {
+    const dd = d instanceof Date ? d : new Date(d);
+    dd.setUTCHours(0, 0, 0, 0);
+    return formatDateKey(dd);
+  }));
+  
   while (currentDate <= endDate) {
-    const dayOfWeek = currentDate.getDay();
+    // Get the UTC day of week (0 = Sunday, 1 = Monday, etc.)
+    const dayOfWeek = currentDate.getUTCDay();
+    const currentKey = formatDateKey(currentDate);
+    
+    // Skip this entire day if it's excluded
+    if (excludedSet.has(currentKey)) {
+      currentDate.setUTCDate(currentDate.getUTCDate() + 1);
+      continue;
+    }
     
     // Find all slots that match this day of week
     slots.forEach(slot => {
@@ -76,21 +100,29 @@ export const calculateRecurringAvailability = (slots, startDate = null, endDate 
       
       const slotDayOfWeek = slot.dayOfWeek !== undefined ? slot.dayOfWeek : getDayOfWeek(slot.day);
       
+        // Only add this slot if its dayOfWeek exactly matches the current date's day of week (in UTC)
       if (slotDayOfWeek === dayOfWeek) {
-        calculatedSlots.push({
-          day: new Date(currentDate),
-          dayOfWeek: slotDayOfWeek,
-          dayName: getDayName(slotDayOfWeek),
-          startTime: slot.startTime,
-          endTime: slot.endTime,
-          recurring: slot.recurring !== false,
-          _id: slot._id // Include slot ID if available
-        });
+          // Create a unique key to prevent duplicates: date + time
+          const uniqueKey = `${currentKey}|${slot.startTime}|${slot.endTime}`;
+        
+          // Only add if we haven't already added this exact slot for this date
+          if (!slotMap.has(uniqueKey)) {
+            slotMap.set(uniqueKey, true);
+            calculatedSlots.push({
+              day: new Date(currentDate),
+              dayOfWeek: dayOfWeek,
+              dayName: getDayName(dayOfWeek),
+              startTime: slot.startTime,
+              endTime: slot.endTime,
+              recurring: slot.recurring !== false,
+              _id: slot._id // Include slot ID if available
+            });
+          }
       }
     });
     
-    // Move to next day
-    currentDate.setDate(currentDate.getDate() + 1);
+    // Move to next day in UTC
+    currentDate.setUTCDate(currentDate.getUTCDate() + 1);
   }
   
   return calculatedSlots;
@@ -111,14 +143,13 @@ export const getCurrentMonthAvailability = (slots) => {
  * @param {Number} days - Number of days to calculate (default: 90)
  * @returns {Array} - Array of calculated slots
  */
-export const getUpcomingAvailability = (slots, days = 90) => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  
-  const endDate = new Date(today);
-  endDate.setDate(endDate.getDate() + days);
-  
-  return calculateRecurringAvailability(slots, today, endDate);
+export const getUpcomingAvailability = (slots, days = 90, excludedDates = []) => {
+  const now = new Date();
+  const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  const end = new Date(start);
+  end.setUTCDate(end.getUTCDate() + days);
+
+  return calculateRecurringAvailability(slots, start, end, excludedDates);
 };
 
 /**
@@ -128,8 +159,13 @@ export const getUpcomingAvailability = (slots, days = 90) => {
  * @param {Date} endDate - End date
  * @returns {Array} - Array of calculated slots
  */
-export const getAvailabilityByDateRange = (slots, startDate, endDate) => {
-  return calculateRecurringAvailability(slots, startDate, endDate);
+export const getAvailabilityByDateRange = (slots, startDate, endDate, excludedDates = []) => {
+  if (!startDate || !endDate) return [];
+  const s = new Date(startDate);
+  const e = new Date(endDate);
+  s.setUTCHours(0, 0, 0, 0);
+  e.setUTCHours(23, 59, 59, 999);
+  return calculateRecurringAvailability(slots, s, e, excludedDates);
 };
 
 /**
@@ -138,14 +174,13 @@ export const getAvailabilityByDateRange = (slots, startDate, endDate) => {
  * @param {Date} date - The date to get availability for
  * @returns {Array} - Array of calculated slots for that date
  */
-export const getAvailabilityForDate = (slots, date) => {
-  const startOfDay = new Date(date);
-  startOfDay.setHours(0, 0, 0, 0);
-  
-  const endOfDay = new Date(date);
-  endOfDay.setHours(23, 59, 59, 999);
-  
-  return calculateRecurringAvailability(slots, startOfDay, endOfDay);
+export const getAvailabilityForDate = (slots, date, excludedDates = []) => {
+  const d = new Date(date);
+  const startOfDay = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  const endOfDay = new Date(startOfDay);
+  endOfDay.setUTCHours(23, 59, 59, 999);
+
+  return calculateRecurringAvailability(slots, startOfDay, endOfDay, excludedDates);
 };
 
 /**
